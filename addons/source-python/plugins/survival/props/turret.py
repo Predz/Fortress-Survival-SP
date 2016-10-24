@@ -40,11 +40,11 @@ class Turret(Prop):
     def _tick(self):
         "Generic intelligence handling for turrets. Do not override!"
         # Check the turret firstly has ammunition. If not then stop.
-        if ammunition == 0:
+        if self.ammunition == 0:
             return
 
         # Should the turret be able to fire? If not then just delay.
-        next_fire = last_fired + delay
+        next_fire = self.last_fired + self.delay
         if next_fire > time():
             return
 
@@ -55,8 +55,8 @@ class Turret(Prop):
 
         # Cause the damage, and all changes to the turret.
         enemy.take_damage(self.damage, attacker_index=self.owner.index)
-        last_fired = time()
-        ammunition -= 1
+        self.last_fired = time()
+        self.ammunition -= 1
 
         # To be implemented.
         self.animate()
