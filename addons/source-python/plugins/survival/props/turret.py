@@ -27,7 +27,7 @@ class Turret(Prop):
 
     # All intelligence, and damage management.
     tick_manager = on_tick_listener_manager
-    last_fired = time()
+    last_fired = 0
     delay = 2
     ammunition = 200
     damage = 50
@@ -36,6 +36,7 @@ class Turret(Prop):
         super(Prop, self).__init__(index)
 
         self.tick_manager.register_listener(self._tick)
+        self.last_fired = time()
 
     def _tick(self):
         "Generic intelligence handling for turrets. Do not override!"
