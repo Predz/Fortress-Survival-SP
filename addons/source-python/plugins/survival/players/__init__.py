@@ -6,14 +6,12 @@
 
 __all__ = (
     'player_dictionary',
-    'PlayerDictionary',
     'Player',
     )
 
 from listeners import OnClientFullyConnect
 from listeners import OnClientDisconnect
 
-from .dictionary import PlayerDictionary
 from .dictionary import player_dictionary
 from .entity import Player
 
