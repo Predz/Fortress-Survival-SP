@@ -7,6 +7,7 @@
 __all__ = ('PropDictionary', )
 
 from .entity import Prop
+from .transmit import no_transmit_indexes
 
 #
 #
@@ -26,6 +27,7 @@ class PropDictionary(dict):
         "Call if item is missing from the dictionary."
         # Create the prop if non-existant.
         instance = self[name] = Prop.create_prop(name, self.owner)
+        no_transmit_indexes.add(instance.index)
         return instance
 
     def __delitem__(self, name):
@@ -33,9 +35,6 @@ class PropDictionary(dict):
         # No point to delete if not existant.
         if name not in self:
             return
-        self.on_prop_deleted(name)
+        no_transmit_indexes.discard(self[name].index)
         super().__delitem__(name)
 
-    def on_prop_deleted(self, name):
-        "Callback for when a prop is deleted."
-        pass
