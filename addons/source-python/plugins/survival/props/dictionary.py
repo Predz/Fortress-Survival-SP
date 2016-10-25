@@ -6,6 +6,8 @@
 
 __all__ = ('PropDictionary', )
 
+from listeners import OnEntityDeleted
+
 from .entity import Prop
 from .transmit import no_transmit_indexes
 
@@ -13,7 +15,15 @@ from .transmit import no_transmit_indexes
 #
 #
 
-class PropDictionary(dict):
+class DeletionHandler(type):
+    dictionaries = list()
+
+    def __call__(cls, *args, **kwargs):
+        instance = super().__call__(*args, **kwargs)
+        cls.dictionaries.append(instance)
+        return instance
+
+class PropDictionary(dict, metaclass=DeletionHandler):
     "Dictionary to manage all props owned by a player."
 
     def __init__(self, owner, *args, **kwargs):
@@ -38,3 +48,26 @@ class PropDictionary(dict):
         no_transmit_indexes.discard(self[name].index)
         super().__delitem__(name)
 
+    def find_key_by_index(self, index):
+        "Find an item from dictionary by their index."
+        for instance in self.values():
+            if instance.index == index:
+                return instance.name
+        return None
+
+#
+#
+#
+
+@OnEntityDeleted
+def listener_on_entity_deleted(base_entity):
+    if not base_entity.is_networked():
+        return
+
+    for prop_dictionary in DeletionHandler.dictionaries:
+        name = prop_dictionary.find_key_by_index(base_entity.index)
+        if name is None:
+            continue
+ 
+        del prop_dictionary[name]
+        break
